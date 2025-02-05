@@ -7,7 +7,7 @@ import path from 'path';
 
 // Define accepted image file types and max file size
 const ALLOWED_IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.webp'];
-const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB limit
+// const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB limit
 
 async function handleUpload(req: Request): Promise<{ filePath: string; fileName: string }> {
     const formData = await req.formData();
