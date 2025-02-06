@@ -1,86 +1,65 @@
 /* eslint-disable */
-
 import { NextResponse } from 'next/server';
 import sharp from 'sharp';
-import fs from 'fs-extra';
-import path from 'path';
 
-// Define accepted image file types and max file size
+// Define accepted image file types
 const ALLOWED_IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.webp'];
-// const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB limit
 
-async function handleUpload(req: Request): Promise<{ filePath: string; fileName: string }> {
+async function handleUpload(req: Request): Promise<{ fileBuffer: Buffer; fileName: string; mimeType: string }> {
     const formData = await req.formData();
     const file = formData.get('file') as File | null;
 
     if (!file) throw new Error('No file uploaded');
-    
+
     const fileBuffer = Buffer.from(await file.arrayBuffer());
     const fileName = `${Date.now()}-${file.name}`;
-    const filePath = `/tmp/uploads/${fileName}`;
+    const mimeTypes: Record<string, string> = {
+        '.jpg': 'image/jpeg',
+        '.jpeg': 'image/jpeg',
+        '.png': 'image/png',
+        '.webp': 'image/webp',
+    };
+    const fileExtension = file.name.split('.').pop()?.toLowerCase() || '';
+    const mimeType = mimeTypes[`.${fileExtension}`] || 'application/octet-stream';
 
-    await fs.ensureDir('/tmp/uploads');
-    await fs.writeFile(filePath, fileBuffer);
+    if (!ALLOWED_IMAGE_TYPES.includes(`.${fileExtension}`)) {
+        throw new Error('Unsupported file type');
+    }
 
-    return { filePath, fileName };
+    return { fileBuffer, fileName, mimeType };
 }
 
-const resizeImage = async (filePath: string, outputFilePath: string) => {
-    await sharp(filePath)
+const resizeImage = async (inputBuffer: Buffer): Promise<Buffer> => {
+    return await sharp(inputBuffer)
         .resize({ width: 1000 })
         .toFormat('jpeg', { quality: 70 })
-        .toFile(outputFilePath);
+        .toBuffer();
 };
 
 // Handle POST requests
 export async function POST(req: Request) {
     try {
-        // Set CORS headers to allow any origin
-        const response = new NextResponse(null, {
-            headers: {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'POST, OPTIONS',
-                'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-            },
-        });
-
-        // Handle preflight OPTIONS request
+        // Handle CORS for preflight requests
         if (req.method === 'OPTIONS') {
-            return response;
+            return new NextResponse(null, {
+                headers: {
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+                    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+                },
+            });
         }
 
-        const { filePath, fileName } = await handleUpload(req);
-        const fileExtension = path.extname(fileName).toLowerCase();
-        const resizedPath = `/tmp/uploads/resized-${fileName}`;
+        // Process uploaded image
+        const { fileBuffer, fileName } = await handleUpload(req);
+        const resizedBuffer = await resizeImage(fileBuffer);
 
-        if (!ALLOWED_IMAGE_TYPES.includes(fileExtension)) {
-            return new Response(
-                JSON.stringify({ error: 'Unsupported file type' }),
-                {
-                    status: 400,
-                    headers: { 'Content-Type': 'application/json' },
-                }
-            );
-        }
-
-        // Resize the image
-        await resizeImage(filePath, resizedPath);
-
-        // Read the resized file and prepare response
-        const fileBuffer = await fs.readFile(resizedPath);
-        const mimeTypes: Record<string, string> = {
-            '.jpg': 'image/jpeg',
-            '.jpeg': 'image/jpeg',
-            '.png': 'image/png',
-            '.webp': 'image/webp',
-        };
-        const mimeType = mimeTypes[fileExtension] || 'application/octet-stream';
-
-        return new Response(fileBuffer, {
+        // Return resized image as response
+        return new Response(resizedBuffer, {
             status: 200,
             headers: {
-                'Content-Type': mimeType,
-                'Content-Disposition': `attachment; filename="${fileName}"`,
+                'Content-Type': 'image/jpeg',
+                'Content-Disposition': `attachment; filename="resized-${fileName}.jpg"`,
                 'Access-Control-Allow-Origin': '*',
                 'Access-Control-Allow-Methods': 'POST, OPTIONS',
                 'Access-Control-Allow-Headers': 'Content-Type, Authorization',
