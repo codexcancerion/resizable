@@ -9,11 +9,24 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@heroui/button": "^2.2.13",
+    "@heroui/input": "^2.4.13",
+    "@heroui/react": "^2.7.2",
+    "@heroui/spinner": "^2.2.10",
+    "@heroui/system": "^2.4.10",
+    "@heroui/theme": "^2.4.9",
     "browser-image-compression": "^2.0.2",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "framer-motion": "^12.4.4",
     "fs-extra": "^11.3.0",
+    "lucide-react": "^0.475.0",
+    "motion": "^12.4.4",
     "next": "15.1.6",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "tailwind-merge": "^3.0.1",
+    "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
