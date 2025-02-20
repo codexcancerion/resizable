@@ -3,7 +3,6 @@
 import ApiSpecificationsSection from "@/components/sections/ApiSpecificationsSection";
 import Hero from "@/components/sections/Hero";
 import TestSection from "@/components/sections/TestSection";
-import { useState } from "react";
 
 export default function LandingPage() {
 

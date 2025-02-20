@@ -29,7 +29,7 @@ export default function ApiSpecificationsSection() {
                 <p><strong>Headers:</strong></p>
                 <ul className="list-disc list-inside">
                     <li>Content-Type: image/jpeg</li>
-                    <li>Content-Disposition: attachment; filename="resized-image.jpg"</li>
+                    <li>Content-Disposition: attachment; filename=&quot;resized-image.jpg&quot;</li>
                 </ul>
             </div>
 

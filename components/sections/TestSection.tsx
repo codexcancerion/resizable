@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react";
-import { Button, Input, Spinner } from "@heroui/react"
+import { Button, Spinner } from "@heroui/react"
 import getImageFileSize from "@/utils/ImageSize";
 import { convertBytesToMB } from "@/utils/SizeConverter";
 import { Lens } from "../magicui/lens";
@@ -22,7 +22,7 @@ export default function TestSection() {
             setFile(selectedFile);
             setPreviewUrl(URL.createObjectURL(selectedFile));
             getImageFileSize(selectedFile).then((size) => {
-                return setRawFileSize(size || 0);
+                return setRawFileSize(convertBytesToMB(size || 0));
             })
         }
     };
@@ -41,7 +41,7 @@ export default function TestSection() {
         formData.append("file", file);
 
         try {
-            const response = await fetch("https://resizableapi.vercel.app/api/resize", {
+            const response = await fetch("/api/resize", {
                 method: "POST",
                 body: formData,
             });
@@ -106,7 +106,7 @@ export default function TestSection() {
                             <div>
                                 <p className="text-gray-700">
                                     File size :
-                                    <span className="text-purple-800 font-bold"> {convertBytesToMB(rawFileSize)}</span> MB
+                                    <span className="text-purple-800 font-bold"> {rawFileSize}</span> MB
                                 </p>
                             </div>
                         </>
@@ -147,7 +147,7 @@ export default function TestSection() {
                             </p>
                             <p className="text-gray-700">
                                 Size reduction rate :
-                                <span className="text-purple-800 font-bold"> {processedFileSize / rawFileSize} </span> %
+                                <span className="text-purple-800 font-bold"> {(100 - (processedFileSize / rawFileSize)).toFixed(2)} </span> %
                             </p>
                         </div>
 
