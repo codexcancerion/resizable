@@ -21,7 +21,7 @@
     "framer-motion": "^12.4.4",
     "fs-extra": "^11.3.0",
     "lucide-react": "^0.475.0",
-    "motion": "^12.4.4",
+    "motion": "^12.4.10",
     "next": "15.1.6",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
