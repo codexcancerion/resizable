@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { WarpBackground } from "../magicui/warp-background";
-import { Github, Twitter, Linkedin, Mail } from "lucide-react";
+import { Github, Mail } from "lucide-react";
 
 export default function Footer() {
     return (

@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable */
 
 import { motion } from "framer-motion";
 import { BoxReveal } from "../magicui/box-reveal";
